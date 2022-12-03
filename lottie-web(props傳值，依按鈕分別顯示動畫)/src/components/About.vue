@@ -1,5 +1,7 @@
 <template>
     <div>
+        {{firstLoading}}
+        <br>
         {{msg}}
         <br>
         {{options}}
@@ -13,7 +15,7 @@
     import lottie from 'lottie-web'
 
     export default {
-        props: ['msg', 'options'],
+        props: ['msg', 'options', 'firstLoading'],
         data() {
             return {
                 eee: false,
@@ -22,6 +24,25 @@
                 text1: 'aaa',
                 text2: 'bbb',
                 text3: 'ccc',
+            }
+        },
+        mounted() {
+            this.dddd()
+            if (this.firstLoading === 3 && (this.options.step.percent === 100 && this.options.step.checked === true)) {
+                this.eee = true;
+                setTimeout(() => {
+                    this.cccc()
+                }, 0);
+            } else if (this.firstLoading === 4 && (this.options.heart.percent === 100 && this.options.heart.checked === true)) {
+                this.fff = true;
+                setTimeout(() => {
+                    this.dddd()
+                }, 0);
+            } else if (this.firstLoading === 5 && (this.options.sleep.percent === 100 && this.options.sleep.checked === true)) {
+                this.ggg = true;
+                setTimeout(() => {
+                    this.eeee()
+                }, 0);
             }
         },
         updated() {

@@ -3,7 +3,7 @@
     <button @click="aaa">aaa</button>
     <button @click="bbb">bbb</button>
     <button @click="ccc">ccc</button>
-    <About :msg="text" :options="dataObj" />
+    <About :msg="text" :options="dataObj" :firstLoading="firstLoading" />
   </div>
 </template>
 
@@ -13,10 +13,11 @@ import About from '@/components/About'
   export default {
     data() {
       return {
+        firstLoading: 4,
         text: 'aaa',
         dataObj: {
           step: {
-            percent: 80,
+            percent: 100,
             checked: true,
           },
           heart: {
