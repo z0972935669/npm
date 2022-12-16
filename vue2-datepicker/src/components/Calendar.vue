@@ -9,7 +9,6 @@
         :clearable="false"
         :popup-class="'datepickerPopup'"
         :editable="false"
-        v-bind="$attrs"
         format="YYYY/M/D"
         :value-type="dateFormat"
         :inline="true"
@@ -59,13 +58,13 @@
             </div>
             <div class="mx-slot-list" style="margin-bottom: 9px;" v-if="isHeart">
               <div>
-                <p style="margin-bottom: 10px;">
+                <p class="cl-flex cl-align-center" style="margin-bottom: 10px;">
                   <span class="mx-slot-footer-num mx-slot-footer-num-heart-rate">
                     20
                   </span>
                   <label class="mx-slot-footer-txt">達運動心率維持20分鐘</label>
                 </p>
-                <p>
+                <p class="cl-flex cl-align-center">
                   <span class="mx-slot-footer-num mx-slot-footer-num-heart-rate">30</span>
                   <label class="mx-slot-footer-txt">達運動心率維持30分鐘</label>
                 </p>
@@ -316,7 +315,7 @@
                 </div>
                 <div>
                   <a
-                    href="#"
+                    href="javascript:void(0);"
                     class="btn02 btnColorGreen01"
                     style="margin: 0;"
                     @click="goalMsgPopup = false"
@@ -340,6 +339,7 @@ import 'vue2-datepicker/locale/zh-tw'
 import $ from 'jquery'
 
 export default {
+  name: "Calendar",
   components: {
     DatePicker
   },
@@ -371,14 +371,22 @@ export default {
         formatLocale: {
           firstDayOfWeek: 0,
         },
-        yearFormat: 'YYYY', //調整年
-        monthFormat: 'MM' //調整月
+        yearFormat: 'YYYY',
+        monthFormat: 'MM',
       },
       goalMsgPopup: false,
     }
   },
   mounted() {
     this.optionSettings();
+    this.hideNotCurrentMonth();
+    $('.mx-btn-icon-left').on('click', () => {
+      this.hideNotCurrentMonth();
+    })
+    $('.mx-btn-icon-right').on('click', () => {
+      this.hideNotCurrentMonth();
+    })
+    
   },
   updated() {
     this.optionSettings();
@@ -409,6 +417,7 @@ export default {
     // 當改變年月時
     changePanel(date) {
       setTimeout(() => {
+        // 清除所有樣式
         $('.mx-table-date').find('.cell').each(function(k,v) {
           $(v).html(`<div>${v.title.split('/')[2]}</div>`);
           if ($(this).text() === '逾期') {
@@ -429,7 +438,7 @@ export default {
             new Date(item).getMonth() === new Date(date).getMonth() &&
             new Date(item).getFullYear() === new Date(date).getFullYear()
           ) {
-            $('.cell').each((k,v) => {
+            $('.cell').not('.not-current-month').each((k,v) => {
               if (v.title === item) {
                 $(v).html('<div class="invalid">逾期</div>');
               }
@@ -441,7 +450,7 @@ export default {
             new Date(item).getMonth() === new Date(date).getMonth() &&
             new Date(item).getFullYear() === new Date(date).getFullYear()
           ) {
-            $('.cell').each((k,v) => {
+            $('.cell').not('.not-current-month').each((k,v) => {
               if (v.title === item) {
                 $(v).html('<div class="invalid">手動</div>');
               }
@@ -453,7 +462,7 @@ export default {
             new Date(item).getMonth() === new Date(date).getMonth() &&
             new Date(item).getFullYear() === new Date(date).getFullYear()
           ) {
-            $('.cell').each((k,v) => {
+            $('.cell').not('.not-current-month').each((k,v) => {
               if (v.title === item) {
                 if (this.isWalk) {
                   // 步數
@@ -484,7 +493,7 @@ export default {
             new Date(item).getMonth() === new Date(date).getMonth() &&
             new Date(item).getFullYear() === new Date(date).getFullYear()
           ) {
-            $('.cell').each((k,v) => {
+            $('.cell').not('.not-current-month').each((k,v) => {
               if (v.title === item) {
                 $(v).find('div').addClass('unactive');
               }
@@ -508,6 +517,7 @@ export default {
         }
       }, 0);
     },
+    // 年和月的顏色切換
     yearAndMonthChangeColor() {
       $('.mx-table-year').find('.cell.active').css('background', this.options.content.mainColor);
       $('.mx-table-month').find('.cell.active').css('background', this.options.content.mainColor);
@@ -519,7 +529,7 @@ export default {
           new Date(item).getMonth() === new Date(date).getMonth() &&
           new Date(item).getFullYear() === new Date(date).getFullYear()
         ) {
-          $('.cell').each((k,v) => {
+          $('.cell').not('.not-current-month').each((k,v) => {
             if (v.title === item) {
               $(v).html('<div class="invalid">逾期</div>');
             }
@@ -531,7 +541,7 @@ export default {
           new Date(item).getMonth() === new Date(date).getMonth() &&
           new Date(item).getFullYear() === new Date(date).getFullYear()
         ) {
-          $('.cell').each((k,v) => {
+          $('.cell').not('.not-current-month').each((k,v) => {
             if (v.title === item) {
               $(v).html('<div class="invalid">手動</div>');
             }
@@ -543,7 +553,7 @@ export default {
           new Date(item).getMonth() === new Date(date).getMonth() &&
           new Date(item).getFullYear() === new Date(date).getFullYear()
         ) {
-          $('.cell').each((k,v) => {
+          $('.cell').not('.not-current-month').each((k,v) => {
             if (v.title === item) {
               if (this.isWalk) {
                 // 步數
@@ -567,6 +577,7 @@ export default {
               }
             }
           })
+          // 移除分數
           $('.mx-slot-score.active').remove();
         }
       })
@@ -575,7 +586,7 @@ export default {
           new Date(item).getMonth() === new Date(date).getMonth() &&
           new Date(item).getFullYear() === new Date(date).getFullYear()
         ) {
-          $('.cell').each((k,v) => {
+          $('.cell').not('.not-current-month').each((k,v) => {
             if (v.title === item) {
               $(v).find('div').addClass('unactive');
             }
@@ -586,6 +597,7 @@ export default {
     checkBeacon() {
       this.goalMsgPopup = true;
       $('#notice').find('svg').remove();
+      // 驚嘆號-提示插圖 icon 動畫
       this.renderNoticeAnimation();
     },
     // 驚嘆號-提示插圖 icon 動畫
@@ -598,6 +610,19 @@ export default {
           autoplay: true,
           animationData: notice // 動畫 json 路徑
       });
+    },
+    // 清除非當前月份的日期
+    hideNotCurrentMonth() {
+      if ($('.mx-table-date').find('tr').eq(1).find('.not-current-month').length === 7) {
+        $('.mx-table-date').find('tr').eq(1).hide();
+      } else {
+        $('.mx-table-date').find('tr').eq(1).show();
+      }
+      if ($('.mx-table-date').find('tr').eq(6).find('.not-current-month').length === 7) {
+        $('.mx-table-date').find('tr').eq(6).hide();
+      } else {
+        $('.mx-table-date').find('tr').eq(6).show();
+      }
     },
   }
 }
@@ -737,8 +762,12 @@ export default {
 }
 .mx-calendar-content {
   top: -20px;
+  height: auto;
 }
 .mx-table-year, .mx-table-month {
+  tr {
+    height: 36px;
+  }
   .cell {
     &.active {
       border-radius: 99em;
@@ -833,6 +862,9 @@ export default {
       color: #b1b1b1;
     }
   }
+  .not-current-month > div {
+    display: none;
+  }
 }
 .mx-btn-icon-double-left {
   display: none;
@@ -845,9 +877,8 @@ export default {
 }
 .mx-datepicker-footer {
   border: 0;
-}
-.mx-datepicker-body {
-  height: 327px;
+  position: relative;
+  top: -15px;
 }
 .mx-slot-footer {
   border: 1px solid #E3F2FD;
