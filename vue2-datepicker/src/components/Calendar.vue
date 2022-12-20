@@ -334,6 +334,9 @@
 <script>
 import lottie from "lottie-web";
 import notice from "@/pages/health/assets/animation/notice.json";
+// 禁止點擊非當月的日期
+// handleCellClick()
+// node_modules/vue2-datepicker/index.esm.js 需隱藏 1311 行, "click": _vm.handleCellClick
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/locale/zh-tw'
 import $ from 'jquery'
@@ -382,11 +385,10 @@ export default {
     this.hideNotCurrentMonth();
     $('.mx-btn-icon-left').on('click', () => {
       this.hideNotCurrentMonth();
-    })
+    });
     $('.mx-btn-icon-right').on('click', () => {
       this.hideNotCurrentMonth();
-    })
-    
+    });
   },
   updated() {
     this.optionSettings();
@@ -416,6 +418,7 @@ export default {
     },
     // 當改變年月時
     changePanel(date) {
+      this.hideNotCurrentMonth();
       setTimeout(() => {
         // 清除所有樣式
         $('.mx-table-date').find('.cell').each(function(k,v) {
@@ -433,73 +436,7 @@ export default {
             $(this).find('div').removeClass('unactive');
           } 
         })
-        this.options.settings.overdue.forEach(item => {
-          if (
-            new Date(item).getMonth() === new Date(date).getMonth() &&
-            new Date(item).getFullYear() === new Date(date).getFullYear()
-          ) {
-            $('.cell').not('.not-current-month').each((k,v) => {
-              if (v.title === item) {
-                $(v).html('<div class="invalid">逾期</div>');
-              }
-            })
-          }
-        })
-        this.options.settings.manual.forEach(item => {
-          if (
-            new Date(item).getMonth() === new Date(date).getMonth() &&
-            new Date(item).getFullYear() === new Date(date).getFullYear()
-          ) {
-            $('.cell').not('.not-current-month').each((k,v) => {
-              if (v.title === item) {
-                $(v).html('<div class="invalid">手動</div>');
-              }
-            })
-          }
-        })
-        this.options.settings.active.forEach((item, idx) => {
-          if (
-            new Date(item).getMonth() === new Date(date).getMonth() &&
-            new Date(item).getFullYear() === new Date(date).getFullYear()
-          ) {
-            $('.cell').not('.not-current-month').each((k,v) => {
-              if (v.title === item) {
-                if (this.isWalk) {
-                  // 步數
-                  $(v).find('div').addClass('active').css('background', this.options.content.mainColor);
-
-                  $(v).append(`<div class="mx-slot-score" style="color: #2196f3; border: 1px solid #2196f3;">${parseInt(this.options.settings.score[idx]).toLocaleString()}</div>`);
-                } else if (this.isHeart) {
-                  // 心率
-                  $(v).find('div').addClass('active').css('background', this.options.content.mainColor);
-                  
-                  $(v).append(`<div class="mx-slot-score" style="color: #FF7043; border: 1px solid #FF7043;">${parseInt(this.options.settings.score[idx]).toLocaleString()}</div>`);
-                } else if (this.isSleep) {
-                  // 睡眠
-                  $(v).find('div').addClass('active').css('background', this.options.content.mainColor);
-                } else if (this.isGYM) {
-                  // 健身場館
-                  $(v).find('div').addClass('active').css('background', this.options.content.mainColor);
-                } else if (this.isAerobic) {
-                  // 有氧運動
-                  $(v).find('div').addClass('active').css('background', this.options.content.mainColor);
-                }
-              }
-            })
-          }
-        })
-        this.options.settings.unactive.forEach(item => {
-          if (
-            new Date(item).getMonth() === new Date(date).getMonth() &&
-            new Date(item).getFullYear() === new Date(date).getFullYear()
-          ) {
-            $('.cell').not('.not-current-month').each((k,v) => {
-              if (v.title === item) {
-                $(v).find('div').addClass('unactive');
-              }
-            })
-          }
-        })
+        this.panelSettings(date);
       }, 0)
     },
     optionYearAndMonth() {
@@ -524,6 +461,9 @@ export default {
     },
     optionSettings() {
       const date = this.time && this.time.length > 0 ? this.time : new Date()
+      this.panelSettings(date);
+    },
+    panelSettings(date) {
       this.options.settings.overdue.forEach(item => {
         if (
           new Date(item).getMonth() === new Date(date).getMonth() &&
@@ -613,16 +553,18 @@ export default {
     },
     // 清除非當前月份的日期
     hideNotCurrentMonth() {
-      if ($('.mx-table-date').find('tr').eq(1).find('.not-current-month').length === 7) {
-        $('.mx-table-date').find('tr').eq(1).hide();
-      } else {
-        $('.mx-table-date').find('tr').eq(1).show();
-      }
-      if ($('.mx-table-date').find('tr').eq(6).find('.not-current-month').length === 7) {
-        $('.mx-table-date').find('tr').eq(6).hide();
-      } else {
-        $('.mx-table-date').find('tr').eq(6).show();
-      }
+      setTimeout(() => {
+        if ($('.mx-table-date').find('tr').eq(1).find('.not-current-month').length === 7) {
+          $('.mx-table-date').find('tr').eq(1).hide();
+        } else {
+          $('.mx-table-date').find('tr').eq(1).show();
+        }
+        if ($('.mx-table-date').find('tr').eq(6).find('.not-current-month').length === 7) {
+          $('.mx-table-date').find('tr').eq(6).hide();
+        } else {
+          $('.mx-table-date').find('tr').eq(6).show();
+        }
+      }, 0);
     },
   }
 }
