@@ -16,6 +16,7 @@
         @panel-change="openPanel"
         @input="changePanel"
         @calendar-change="changePanel"
+        :disabled-date="checkDisabledDate"
       >
         <template v-slot:header>
           <div class="mx-slot-header">
@@ -334,9 +335,6 @@
 <script>
 import lottie from "lottie-web";
 import notice from "@/pages/health/assets/animation/notice.json";
-// 禁止點擊非當月的日期
-// handleCellClick()
-// node_modules/vue2-datepicker/index.esm.js 需隱藏 1311 行, "click": _vm.handleCellClick
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/locale/zh-tw'
 import $ from 'jquery'
@@ -389,6 +387,10 @@ export default {
     $('.mx-btn-icon-right').on('click', () => {
       this.hideNotCurrentMonth();
     });
+    // 禁止開啟年份面板
+    $('.mx-btn-current-year').attr('disabled', true);
+    // 禁止開啟月份面板
+    $('.mx-btn-current-month').attr('disabled', true);
   },
   updated() {
     this.optionSettings();
@@ -412,8 +414,12 @@ export default {
     },
   },
   methods: {
+    // 禁止點擊日期
+    checkDisabledDate(date, currentValue) {
+      return true;
+    },
     // 當日曆面板改變時
-    openPanel() {
+    openPanel(year, month) {
       this.optionYearAndMonth();
     },
     // 當改變年月時
@@ -624,6 +630,7 @@ export default {
   font-weight: 500;
   font-size: 32px;
   line-height: 38px;
+  font-family: "SF Compact Rounded", "Noto Sans TC", "Roboto" !important;
 }
 .mx-slot-header-num2 {
   font-weight: 500;
@@ -732,7 +739,13 @@ export default {
   td {
     color: #b1b1b1;
   }
+  .today {
+    color: #b1b1b1;
+  }
   .cell {
+    &.disabled {
+      background: transparent;
+    }
     &.active {
       background: transparent;
       color: #b1b1b1;
@@ -756,7 +769,7 @@ export default {
       position: absolute;
       left: 0;
       right: 0;
-      bottom: -2px;
+      bottom: -3px;
       margin: auto;
       z-index: 1;
       width: calc(36px / 0.83);
@@ -816,6 +829,8 @@ export default {
 }
 .mx-datepicker-main {
   border: 0;
+  background: #FCFCFC;
+  font: inherit;
 }
 .mx-datepicker-footer {
   border: 0;
@@ -874,18 +889,23 @@ export default {
   border-radius: 8px;
   margin-right: 4px;
   transform: scale(0.83);
-  width: calc(36px / 0.83);
-  height: calc(14px / 0.83);
   text-align: center;
   background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .mx-slot-footer-num-step {
   color:#2196F3;
   border: 1px solid #2196F3;
+  width: calc(36px / 0.83);
+  height: calc(14px / 0.83);
 }
 .mx-slot-footer-num-heart-rate {
   color:#FF7043;
   border: 1px solid #FF7043;
+  width: calc(32px / 0.83);
+  height: calc(14px / 0.83);
 }
 .mx-slot-footer-txt {
   font-weight: 400;
@@ -901,6 +921,7 @@ export default {
     text-align: left;
     h3 {
       margin: 0 0 12px;
+      font-size: 14px;
     }
 }
 .mx-popup-box {
